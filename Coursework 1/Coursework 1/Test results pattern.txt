@@ -1,0 +1,191 @@
+A:
+2: Great Crested Grebe 14:59:29
+6: Baikal Teal 08 Sep 2018
+
+B:
+73: Ruddy Turnstone 03 Dec 2018
+
+C:
+6: Redwing 14 May 2018
+26: Moorland Francolin 16:08:29
+
+E:
+50: Two-barred Greenish Warbler 04 Jan 2018
+
+H:
+80: Red-billed Tropicbird 00:25:60
+
+I:
+26: Cuckoo 04 Aug 2018
+
+J:
+2: Summer Tanager 21:08:38
+
+K:
+3: Song Sparrow 27 Feb 2018
+27: Brambling 16 Mar 2018
+
+L:
+4: Grey-breasted Spurfowl 06:30:17
+76: Alpine Swift 18 May 2018
+
+O:
+71: Guillemot 30 Sep 2018
+
+P:
+9: Black-throated Green Warbler 01 May 2018
+18: Upland Sandpiper 02:55:38
+79: Icterine Warbler 14:11:13
+
+T:
+93: Nubian Nightjar 13 Aug 2018
+
+U:
+91: Crag Martin 06:22:34
+
+V:
+61: Lapland Bunting 15 Sep 2018
+
+
+Inserted
+Inserted
+Inserted
+Inserted
+Inserted
+Inserted
+Inserted
+Not inserted
+Not inserted
+Not inserted
+
+Item from group H subgroup 80 Red-billed Tropicbird 00:25:60
+Item from group E subgroup 86 Leevike 25 Oct 2021
+Item from group E subgroup 10 ID XXX does not exist
+Item from group Z subgroup 10 ID XXX does not exist
+
+Items in group E subgroup 86: 5
+Items in group F subgroup 87: 1
+Items in group B subgroup 73: 2
+Items in group X subgroup 10: 0
+Items in group V subgroup 62: 0
+
+Contents of group E subgroup 86:
+Kaljutuvi 15:36:10
+Kassikakk 14:09:31
+Koskel 13:17:08
+Leevike 25 Oct 2021
+Turteltuvi 03 Nov 2021
+Contents of group F subgroup 87:
+Ristpart 12:32:57
+Contents of group B subgroup 73:
+Ruddy Turnstone 03 Dec 2018
+Varblane 18:06:11
+Group X subgroup 10 does not exist
+Group V subgroup 62 does not exist
+
+Items in group E: 6
+Items in group F: 1
+Items in group B: 2
+
+Group E:
+50: Two-barred Greenish Warbler 04 Jan 2018
+86: Kaljutuvi 15:36:10; Kassikakk 14:09:31; Koskel 13:17:08; Leevike 25 Oct 2021; Turteltuvi 03 Nov 2021
+Group F:
+87: Ristpart 12:32:57
+Group B:
+73: Ruddy Turnstone 03 Dec 2018; Varblane 18:06:11
+Group Z does not exist
+
+Inserted
+Not inserted
+Inserted
+Not inserted
+Not inserted
+Not inserted
+Group T:
+93: Nubian Nightjar 13 Aug 2018
+94: Meigas 25 Oct 2021; Piiritaja 03 Nov 2021; Punarind 16:33:45; Rasvatihane 26 Sep 2018; Turteltuvi 16:33:45
+Group Q:
+1: Luik 03 Nov 2021
+
+Inserted
+Not inserted
+Not inserted
+Not inserted
+Not inserted
+Not inserted
+Not inserted
+Group M:
+10: Sinikael 16 Sep 2021; Sinitihane 16:25:21
+20: Luik 24 Nov 2018
+30: Lagle 13:17:08; Metsis 13:41:02; Nepp 03 Nov 2021
+
+Removed
+Removed
+Removed
+Not removed
+Group K:
+3: Song Sparrow 27 Feb 2018
+Group E:
+50: Two-barred Greenish Warbler 04 Jan 2018
+86: Kaljutuvi 15:36:10; Koskel 13:17:08; Leevike 25 Oct 2021; Turteltuvi 03 Nov 2021
+Group I does not exist
+
+Removed
+Removed
+Not removed
+Not removed
+Not removed
+Group E:
+86: Kaljutuvi 15:36:10; Koskel 13:17:08; Leevike 25 Oct 2021; Turteltuvi 03 Nov 2021
+Group O does not exist
+
+Removed
+Removed
+Not removed
+A:
+2: Great Crested Grebe 14:59:29
+6: Baikal Teal 08 Sep 2018
+
+B:
+73: Ruddy Turnstone 03 Dec 2018; Varblane 18:06:11
+
+C:
+6: Redwing 14 May 2018
+26: Moorland Francolin 16:08:29
+
+E:
+86: Kaljutuvi 15:36:10; Koskel 13:17:08; Leevike 25 Oct 2021; Turteltuvi 03 Nov 2021
+
+F:
+87: Ristpart 12:32:57
+
+H:
+80: Red-billed Tropicbird 00:25:60
+
+J:
+2: Summer Tanager 21:08:38
+
+K:
+3: Song Sparrow 27 Feb 2018
+
+L:
+4: Grey-breasted Spurfowl 06:30:17
+76: Alpine Swift 18 May 2018
+
+M:
+10: Sinikael 16 Sep 2021; Sinitihane 16:25:21
+20: Luik 24 Nov 2018
+30: Lagle 13:17:08; Metsis 13:41:02; Nepp 03 Nov 2021
+
+Q:
+1: Luik 03 Nov 2021
+
+T:
+93: Nubian Nightjar 13 Aug 2018
+94: Meigas 25 Oct 2021; Piiritaja 03 Nov 2021; Punarind 16:33:45; Rasvatihane 26 Sep 2018; Turteltuvi 16:33:45
+
+V:
+61: Lapland Bunting 15 Sep 2018
+
+The data structure contains 30 items
