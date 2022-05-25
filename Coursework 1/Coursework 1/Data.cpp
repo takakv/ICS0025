@@ -18,7 +18,7 @@ void free_subgroup(vector<Item*>* subgroup)
 
 void free_subgroup_from_group(map<int, vector<Item*>*>* group, int subgroup_id, vector<Item*>* subgroup)
 {
-    // If subgroup is empty, delete subgroup from group.
+    // Causes a memory leak if the subgroup is not empty.
     subgroup->clear();
     group->erase(subgroup_id);
     delete subgroup;
