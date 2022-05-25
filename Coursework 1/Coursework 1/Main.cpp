@@ -86,7 +86,7 @@ V:
 /* In those tests I used bird names from Estonian. You are free to replace them with any strings. But be careful, if
     you, for example, replace "Kaljutuvi" with "Rock dove", do it everywhere in this function. */
 	cout << (pData->InsertItem('E', 86, "Koskel", Time()) ? "Inserted" : "Not inserted") << endl;
-	cout << (pData->InsertItem('E', 86, "Kaljutuvi", Time(15, 36, 10)) ? "Inserted" : "Not inserted") << endl;
+	cout << (pData->InsertItem('E', 86, "Kassikakk", Time(15, 36, 10)) ? "Inserted" : "Not inserted") << endl;
 	cout << (pData->InsertItem('E', 86, "Turteltuvi", Date()) ? "Inserted" : "Not inserted") << endl;
 	cout << (pData->InsertItem('E', 86, "Leevike", Date(25, 10, 2021)) ? "Inserted" : "Not inserted") << endl;
 	cout << (pData->InsertItem('F', 87, "Ristpart") ? "Inserted" : "Not inserted") << endl;

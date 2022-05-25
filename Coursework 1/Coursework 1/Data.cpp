@@ -2,6 +2,38 @@
 
 const Date Begin = Date(1, 1, 2018), End = Date(31, 12, 2018);
 
+void free_item(Item* item, vector<Item*>* subgroup)
+{
+    // Delete element from subgroup.
+    auto it = find(subgroup->begin(), subgroup->end(), item);
+    subgroup->erase(it);
+    delete item;
+}
+
+void free_subgroup(vector<Item*>* subgroup)
+{
+    while (subgroup && !subgroup->empty())
+        free_item(subgroup->front(), subgroup);
+}
+
+void free_subgroup_from_group(map<int, vector<Item*>*>* group, int subgroup_id, vector<Item*>* subgroup)
+{
+    // If subgroup is empty, delete subgroup from group.
+    subgroup->clear();
+    group->erase(subgroup_id);
+    delete subgroup;
+}
+
+void free_group(map<int, vector<Item*>*>* group)
+{
+    while (group && !group->empty())
+    {
+        auto temp = group->begin();
+        free_subgroup(temp->second);
+        free_subgroup_from_group(group, temp->first, temp->second);
+    }
+}
+
 Data::Data(int n)
 {
     for (int i = 0; i < n; ++i)
@@ -67,7 +99,7 @@ Item* Data::GetItem(char c, int i, string s)
 
 void Data::PrintAll()
 {
-    for (auto const& group : DataStructure) PrintGroup(group.first);
+    for (auto const& group : DataStructure) this->PrintGroup(group.first);
 }
 
 void Data::PrintGroup(char c)
@@ -77,7 +109,7 @@ void Data::PrintGroup(char c)
 
     cout << c << ":\n";
     for (auto const& subgroup : *DataStructure[c])
-        PrintSubgroup(c, subgroup.first);
+        this->PrintSubgroup(c, subgroup.first);
     cout << endl;
 }
 
@@ -104,10 +136,11 @@ void Data::PrintSubgroup(char c, int i)
     vector<Item*>* v = (*DataStructure[c])[i];
     sort(v->begin(), v->end(), sort_by_name);
 
+    cout << setw(2) << to_string(i) << ":";
     for (auto const& item : *v)
-        cout << setw(2) << item->GetSubgroup() << ": "
-            << item->GetName() << " "
-            << visit(make_timestamp_string(), item->GetTimestamp()) << endl;
+        cout << " " << item->GetName() << " "
+            << visit(make_timestamp_string(), item->GetTimestamp()) << ";";
+    cout << '\b' << endl;
 }
 
 void Data::PrintItem(char c, int i, string s)
@@ -127,7 +160,7 @@ void Data::PrintItem(char c, int i, string s)
 int Data::CountItems()
 {
     int count = 0;
-    for (auto const& group : DataStructure) count += CountGroupItems(group.first);
+    for (auto const& group : DataStructure) count += this->CountGroupItems(group.first);
     return count;
 }
 
@@ -137,7 +170,7 @@ int Data::CountGroupItems(char c)
 
     int count = 0;
     for (auto const& subgroup : *DataStructure[c])
-        count += CountSubgroupItems(c, subgroup.first);
+        count += this->CountSubgroupItems(c, subgroup.first);
     return count;
 }
 
@@ -157,9 +190,14 @@ inline bool invalid_group(char c)
     return !(c > 'A' && c < 'Z');
 }
 
+inline bool invalid_sub(int i)
+{
+    return i < 0 || i > 99;
+}
+
 Item* Data::InsertItem(char c, int i, string s, optional<variant<Date, Time>> v)
 {
-    if (s.empty() || invalid_group(c)) return nullptr;
+    if (s.empty() || invalid_group(c) || invalid_sub(i)) return nullptr;
 
     Item* item = GetItem(c, i, s);
     if (item != nullptr) return nullptr;
@@ -220,7 +258,7 @@ vector<Item*>* CreateSubgroup(char c, int i,
 vector<Item*>* Data::InsertSubgroup(char c, int i,
     initializer_list<tuple<string, optional<variant<Date, Time>>>> items)
 {
-    if (invalid_group(c)) return nullptr;
+    if (invalid_group(c) || invalid_sub(i)) return nullptr;
 
     // The subgroup must not exist.
     if (DataStructure.count(c) != 0 && DataStructure[c]->count(i) != 0)
@@ -245,6 +283,11 @@ map<int, vector<Item*>*>* Data::InsertGroup(char c, initializer_list<int> subgro
     initializer_list<initializer_list<tuple<string, optional<variant<Date, Time>>>>> items)
 {
     if (invalid_group(c) || DataStructure.count(c) > 0) return nullptr;
+    if (subgroups.size() != items.size()) return nullptr;
+
+    // Premature iteration avoids messing with releasing memory later.
+    for (const int subgroup : subgroups)
+        if (invalid_sub(subgroup)) return nullptr;
 
     auto group = new map<int, vector<Item*>*>;
 
@@ -259,11 +302,7 @@ map<int, vector<Item*>*>* Data::InsertGroup(char c, initializer_list<int> subgro
         // We must free the memory.
         if (subgroup == nullptr) {
             // Release already created subgroups in the group.
-            for (int j = 0; j < i; ++j) {
-                vector<Item*>().swap(*(*DataStructure[c])[subgroup_id]);
-                (*DataStructure[c])[subgroup_id] = nullptr;
-            }
-
+            for (int j = 0; j < i; ++j) free_group(group);
             return nullptr;
         }
 
@@ -286,20 +325,11 @@ bool Data::RemoveItem(char c, int i, string s)
     if (item == nullptr) return false;
 
     auto subgroup = GetSubgroup(c, i);
-
-    // Delete element from subgroup.
-    auto it = find(subgroup->begin(), subgroup->end(), item);
-    subgroup->erase(it);
-    delete item;
-
+    free_item(item, subgroup);
     if (!subgroup->empty()) return true;
+
     auto group = GetGroup(c);
-
-    // If subgroup is empty, delete subgroup from group.
-    subgroup->clear();
-    group->erase(i);
-    delete subgroup;
-
+    free_subgroup_from_group(group, i, subgroup);
     if (!DataStructure[c]->empty()) return true;
 
     // If group is empty, delete it from the DS.
@@ -316,7 +346,7 @@ bool Data::RemoveSubgroup(char c, int i)
     if (subgroup == nullptr) return false;
 
     while (subgroup && !subgroup->empty())
-        RemoveItem(c, i, subgroup->front()->GetName());
+        this->RemoveItem(c, i, subgroup->front()->GetName());
 
     return true;
 }
@@ -331,7 +361,7 @@ bool Data::RemoveGroup(char c)
     // DataStructure[c] recreates a key for c.
     int og_size = group->size();
     for (int i = 0; i < og_size; ++i)
-        RemoveSubgroup(c, group->begin()->first);
+        this->RemoveSubgroup(c, group->begin()->first);
 
     return true;
 }
