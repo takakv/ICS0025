@@ -11,16 +11,21 @@ void Writer::operator() ()
     {
         switch (WaitForMultipleObjects(2, hEvents, FALSE, TIMEOUT))
         {
-        case WAIT_OBJECT_0:
+        case WAIT_OBJECT_0: // Input received
             hasData = true;
             break;
-        case WAIT_OBJECT_0 + 1:
-            cout << endl << "Writing aborted" << endl;
+        case WAIT_OBJECT_0 + 1: // Exit event triggered
+            cout << "Command aborted." << endl;
             exit = true;
             break;
         case WAIT_TIMEOUT:
-            cout << "Writing failed. Error: " << GetLastError() << endl;
+            printf("Command failed due to server timeout: error %d\n",
+                GetLastError());
             pc.SetServerError(true);
+            exit = true;
+            break;
+        default:
+            printf("Unhandled error: %d\n", GetLastError());
             exit = true;
             break;
         }
@@ -41,8 +46,22 @@ void Writer::operator() ()
             case c:
                 if (!pc.GetConnectionStatus() && !pc.ConnectPipe())
                 {
-                    cout << "Error: " << GetLastError() << endl;
-                    return;
+                    cout << endl;
+                    cout << "Could not connect to pipe. ";
+                    switch (GetLastError())
+                    {
+                    case ERROR_PIPE_BUSY:
+                        printf("Did you reset the pipe? (error %d)\n",
+                            ERROR_PIPE_BUSY);
+                        break;
+                    case ERROR_FILE_NOT_FOUND:
+                        printf("Is the server running? (error %d)\n",
+                            ERROR_FILE_NOT_FOUND);
+                        break;
+                    default:
+                        printf("Unhandled error: %d\n", GetLastError());
+                        return;
+                    }
                 }
                 pc.SetCommand("ready");
                 break;

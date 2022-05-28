@@ -15,7 +15,7 @@
 
 using namespace std;
 
-enum inputs { c, r, s, e, ini };
+enum inputs { c, r, s, e };
 
 class ThreadBase
 {
@@ -28,21 +28,21 @@ public:
     ThreadBase(queue<inputs>& q, PipeClient& pc, mutex& m, condition_variable& c) : q(q), pc(pc), mx(m), cv(c) {};
 };
 
-class Writer : private ThreadBase
+class Writer : public ThreadBase
 {
     using ThreadBase::ThreadBase;
 public:
     void operator() ();
 };
 
-class InputListener : private ThreadBase
+class InputListener : public ThreadBase
 {
     using ThreadBase::ThreadBase;
 public:
     void operator() ();
 };
 
-class Reader : private ThreadBase
+class Reader : public ThreadBase
 {
     using ThreadBase::ThreadBase;
 private:
