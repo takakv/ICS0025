@@ -5,7 +5,6 @@ void Writer::operator() ()
     HANDLE hEvents[] = { pc.HaveInput, pc.ExitEvent };
     bool hasData = false;
     bool exit = false;
-    const char* input = nullptr;
 
     while (true)
     {
@@ -19,11 +18,13 @@ void Writer::operator() ()
             exit = true;
             break;
         case WAIT_TIMEOUT:
-            printf("Command failed due to server timeout: error %d\n",
-                GetLastError());
-            pc.SetServerError(true);
-            exit = true;
-            break;
+            if (pc.GetConnectionStatus())
+            {
+                printf("Server has been silent for %ds. Enter 'stop' to close the connection.\n",
+                    TIMEOUT / 1000);
+            }
+            // This is important to avoid processing an empty queue.
+            continue;
         default:
             printf("Unhandled error: %d\n", GetLastError());
             exit = true;
@@ -32,15 +33,20 @@ void Writer::operator() ()
 
         if (exit) {
             if (pc.GetConnectionStatus())
+            {
+                pc.DisconnectPipe();
                 CloseHandle(pc.PipeHandle);
+            }
             break;
         }
 
         if (hasData)
         {
-            unique_lock<mutex> lock(mx);
+            scoped_lock lock(mx);
             inputs i = q.front();
 
+            // Messages are "ready" by default, as specified when opening a connection.
+            // Therefore there is no need to check for them.
             switch (i)
             {
             case c:
@@ -63,18 +69,17 @@ void Writer::operator() ()
                         return;
                     }
                 }
-                pc.SetCommand("ready");
                 break;
             case s:
                 pc.SetCommand("stop");
-                pc.DisconnectPipe();
+                if (pc.GetConnectionStatus())
+                    pc.DisconnectPipe();
                 break;
             }
 
-            if (!pc.SendToServer()) return;
-
+            if (pc.GetConnectionStatus())
+                pc.SendToServer();
             q.pop();
-            lock.unlock();
         }
     }
 };

@@ -7,11 +7,6 @@ void InputListener::operator() ()
 
     while (true)
     {
-        if (pc.GetServerError())
-        {
-            cout << "Server error. Enter 'exit' to quit" << endl;
-        }
-
         cout << ">> ";
         cin >> input;
 
@@ -38,7 +33,7 @@ void InputListener::operator() ()
             cout << "Unknown input" << endl;
             continue;
         }
-        unique_lock<mutex> lock(mx);
+        unique_lock lock(mx);
         q.push(i);
         lock.unlock();
         cv.notify_one();

@@ -5,13 +5,11 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <queue>
+#include <thread>
 #include <mutex>
 #include <condition_variable>
 
 #include "PipeClient.h"
-
-#define BUFSIZE 512
-#define TIMEOUT 60*1000
 
 using namespace std;
 

@@ -4,12 +4,14 @@
 #include <iostream>
 #include <string>
 
+#define BUFSIZE 512
+#define TIMEOUT 11*1000
+
 class PipeClient
 {
 private:
     LPCSTR lpszPipename = "\\\\.\\pipe\\ICS0025";
     bool connected = false;
-    bool serverError = false;
     const char* command = nullptr;
 public:
     PipeClient();
@@ -18,10 +20,9 @@ public:
     HANDLE HaveInput;
     HANDLE ExitEvent;
     bool ConnectPipe();
-    bool DisconnectPipe();
+    void DisconnectPipe();
     bool SendToServer();
+    bool ReadFromServer(char* reply, OVERLAPPED Overlapped, HANDLE hEvents[]);
     bool GetConnectionStatus();
-    bool GetServerError();
-    void SetServerError(bool state);
     void SetCommand(const char* command);
 };

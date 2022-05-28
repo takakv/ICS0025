@@ -36,6 +36,14 @@ void close_server(PROCESS_INFORMATION& pi)
     CloseHandle(pi.hThread);
 }
 
+/*
+* The downside of this implementation is that the threads remain
+* active even when the pipe is not connected, and wait for a subsequent
+* connection. A better alternative would be to kill the sender and receiver
+* threads when the stop message is sent to the server, and recreate
+* the threads upon next connection.
+*/
+
 int main()
 {
     STARTUPINFOA si;
