@@ -9,9 +9,10 @@
 #include <mutex>
 #include <condition_variable>
 
-#include "PipeClient.h"
+#include "../../common/common.h"
+#include "../../Coursework 1/Coursework 1/Data.h"
 
-using namespace std;
+#include "PipeClient.h"
 
 enum inputs { c, r, s, e };
 
