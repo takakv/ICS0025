@@ -1,41 +1,5 @@
 #include "CW2.h"
 
-// https://docs.microsoft.com/en-gb/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessa
-// https://docs.microsoft.com/en-us/windows/win32/procthread/creating-processes
-// Spawn new process from executable.
-bool start_server(STARTUPINFOA& si, PROCESS_INFORMATION& pi)
-{
-    ZeroMemory(&si, sizeof(si));
-    si.cb = sizeof(si);
-    ZeroMemory(&pi, sizeof(pi));
-
-    LPCSTR server_name = "ICS0025PipeServer.exe";
-
-    if (!CreateProcessA(server_name,
-        NULL,
-        NULL,
-        NULL,
-        FALSE,
-        CREATE_NEW_CONSOLE,
-        NULL,
-        NULL,
-        &si,
-        &pi
-    ))
-    {
-        cout << "Failed to launch PipeServer. Error: " << GetLastError() << endl;
-        return false;
-    }
-
-    return true;
-}
-
-void close_server(PROCESS_INFORMATION& pi)
-{
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
-}
-
 /*
 * The downside of this implementation is that the threads remain
 * active even when the pipe is not connected, and wait for a subsequent
@@ -46,9 +10,28 @@ void close_server(PROCESS_INFORMATION& pi)
 
 int main()
 {
+    HANDLE hProcess = nullptr;
     STARTUPINFOA si;
     PROCESS_INFORMATION pi;
-    // start_server(si, pi);
+    string input = "";
+    bool auto_start = false;
+
+    if (!is_server_running(hProcess))
+    {
+        cout << "Start the server automatically? (y/n)" << endl << ">> ";
+        cin >> input;
+
+        if (input == "y" || input == "Y")
+        {
+            auto_start = true;
+            if (!start_server(si, pi))
+            {
+                cout << endl;
+                cout << "Please start the server manually." << endl;
+            }
+            else hProcess = pi.hProcess;
+        }
+    }
 
     PipeClient pc;
     queue<inputs> q;
@@ -62,6 +45,38 @@ int main()
     listener_thread.join();
     sender_thread.join();
     receiver_thread.join();
+
+    if (!auto_start && !is_server_running(hProcess)) return 0;
+    else
+    {
+        DWORD lpExitcode = 0;
+        GetExitCodeProcess(hProcess, &lpExitcode);
+        if (lpExitcode != STILL_ACTIVE)
+        {
+            if (auto_start) close_server(pi);
+            else CloseHandle(hProcess);
+            return 0;
+        }
+    }
+
+    cout << "Terminate the server? (y/n)" << endl << ">> ";
+    cin >> input;
+
+    if (input == "y" || input == "Y")
+    {
+        if (!auto_start)
+            hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, GetProcessId(hProcess));
+
+        TerminateProcess(hProcess, 0);
+    }
+    else
+    {
+        cout << "Waiting for the server to be closed manually..." << endl;
+        WaitForSingleObject(hProcess, INFINITE);
+    }
+
+    if (auto_start) close_server(pi);
+    else CloseHandle(hProcess);
 
     return 0;
 }

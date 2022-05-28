@@ -113,7 +113,6 @@ bool PipeClient::ReadFromServer(char* reply, OVERLAPPED Overlapped, HANDLE hEven
 
 void PipeClient::DisconnectPipe()
 {
-    std::cout << "Disconnecting pipe." << std::endl;
     this->connected = false;
 }
 

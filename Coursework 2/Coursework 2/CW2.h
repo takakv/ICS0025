@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <tchar.h>
+#include <psapi.h>
 #include <queue>
 #include <thread>
 #include <mutex>
@@ -45,8 +46,13 @@ class Reader : public ThreadBase
 {
     using ThreadBase::ThreadBase;
 private:
-    unsigned long nRead = 0;
+    Data* ds = new Data();
     char* reply = new char[BUFSIZE];
 public:
     void operator() ();
+    // ~Reader();
 };
+
+bool start_server(STARTUPINFOA& si, PROCESS_INFORMATION& pi);
+void close_server(PROCESS_INFORMATION& pi);
+bool is_server_running(HANDLE& hPipeServer);

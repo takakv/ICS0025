@@ -128,13 +128,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\common\common.cpp" />
+    <ClCompile Include="..\..\common\Date.cpp" />
+    <ClCompile Include="..\..\common\Item.cpp" />
+    <ClCompile Include="..\..\common\Time.cpp" />
+    <ClCompile Include="..\..\Coursework 1\Coursework 1\Data.cpp" />
     <ClCompile Include="InputListener.cpp" />
     <ClCompile Include="PipeClient.cpp" />
     <ClCompile Include="Reader.cpp" />
+    <ClCompile Include="Server.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Writer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\common\common.h" />
+    <ClInclude Include="..\..\common\Date.h" />
+    <ClInclude Include="..\..\common\Item.h" />
+    <ClInclude Include="..\..\common\Time.h" />
+    <ClInclude Include="..\..\Coursework 1\Coursework 1\Data.h" />
     <ClInclude Include="CW2.h" />
     <ClInclude Include="PipeClient.h" />
   </ItemGroup>

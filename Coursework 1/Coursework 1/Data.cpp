@@ -187,7 +187,7 @@ size_t Data::CountSubgroupItems(char c, int i)
 
 inline bool invalid_group(char c)
 {
-    return !(c > 'A' && c < 'Z');
+    return c < 'A' || c > 'Z';
 }
 
 inline bool invalid_sub(int i)
