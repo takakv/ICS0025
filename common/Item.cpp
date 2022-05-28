@@ -1,4 +1,4 @@
-#include "Main.h"
+#include "common.h"
 
 extern default_random_engine Generator;
 extern uniform_int_distribution<int> GroupDistribution;

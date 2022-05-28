@@ -129,18 +129,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\common\Date.cpp" />
+    <ClCompile Include="..\..\common\Item.cpp" />
+    <ClCompile Include="..\..\common\Time.cpp" />
     <ClCompile Include="Data.cpp" />
-    <ClCompile Include="Date.cpp" />
-    <ClCompile Include="Item.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Time.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\common\common.h" />
+    <ClInclude Include="..\..\common\Date.h" />
+    <ClInclude Include="..\..\common\Item.h" />
+    <ClInclude Include="..\..\common\Time.h" />
     <ClInclude Include="Data.h" />
-    <ClInclude Include="Date.h" />
-    <ClInclude Include="Item.h" />
     <ClInclude Include="Main.h" />
-    <ClInclude Include="Time.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
