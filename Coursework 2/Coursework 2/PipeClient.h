@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <iostream>
 #include <string>
+#include <mutex>
 
 #define BUFSIZE 512
 #define TIMEOUT 11*1000
@@ -13,8 +14,9 @@ private:
     LPCSTR lpszPipename = "\\\\.\\pipe\\ICS0025";
     bool connected = false;
     const char* command = nullptr;
+    std::mutex* mx; // Avoid race conditions when error logging.
 public:
-    PipeClient();
+    PipeClient(std::mutex* mx);
     ~PipeClient() = default;
     HANDLE PipeHandle;
     HANDLE HaveInput;

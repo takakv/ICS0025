@@ -33,10 +33,11 @@ int main()
         }
     }
 
-    PipeClient pc;
     queue<inputs> q;
     mutex mx;
     condition_variable cv;
+
+    PipeClient pc(&mx);
 
     thread listener_thread{ InputListener(ref(q), ref(pc), mx, cv) };
     thread sender_thread{ Writer(ref(q), ref(pc), mx, cv) };

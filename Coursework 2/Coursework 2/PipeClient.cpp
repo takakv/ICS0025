@@ -1,10 +1,11 @@
 #include "PipeClient.h"
 
-PipeClient::PipeClient()
+PipeClient::PipeClient(std::mutex* mx)
 {
     this->PipeHandle = nullptr;
     this->ExitEvent = CreateEventA(NULL, TRUE, FALSE, NULL);
     this->HaveInput = CreateEventA(NULL, FALSE, FALSE, NULL);
+    this->mx = mx;
 }
 
 bool PipeClient::ConnectPipe()
@@ -44,11 +45,11 @@ bool PipeClient::SendToServer()
         switch (GetLastError())
         {
         case ERROR_NO_DATA:
-            printf("Reason: the pipe is being closed. (error %d)\n",
+            printf("Reason: the pipe is being closed. Error: %d\n",
                 ERROR_NO_DATA);
             break;
         case ERROR_PIPE_NOT_CONNECTED:
-            printf("Reason: the pipe was disconnected. (error %d)\n",
+            printf("Reason: pipe disconnected. Error: %d\n",
                 ERROR_PIPE_NOT_CONNECTED);
             break;
         default:
@@ -96,18 +97,21 @@ bool PipeClient::ReadFromServer(char* reply, OVERLAPPED Overlapped, HANDLE hEven
         }
     }
 
+    std::scoped_lock lock(*mx);
+
     std::cout << "Reading from pipe failed. ";
     switch (error)
     {
     case ERROR_PIPE_NOT_CONNECTED:
         std::cout << "Reason: pipe disconnected. ";
+        this->connected = false;
         break;
     case ERROR_BROKEN_PIPE:
         std::cout << "Reason: pipe terminated. ";
+        this->connected = false;
         break;
     }
     printf("Error: %d\n", error);
-
     return false;
 }
 
