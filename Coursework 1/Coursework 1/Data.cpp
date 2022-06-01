@@ -2,6 +2,29 @@
 
 const Date Begin = Date(1, 1, 2018), End = Date(31, 12, 2018);
 
+// ==== Helpers =====================
+
+struct make_timestamp_string
+{
+    string operator()(Date t) const { return t.ToString(); }
+    string operator()(Time t) const { return t.ToString(); }
+};
+
+inline bool invalid_group(char c)
+{
+    return c < 'A' || c > 'Z';
+}
+
+inline bool invalid_sub(int i)
+{
+    return i < 0 || i > 99;
+}
+
+inline bool sort_by_name(Item* item1, Item* item2)
+{
+    return item1->GetName().compare(item2->GetName()) < 0;
+}
+
 void free_item(Item* item, vector<Item*>* subgroup)
 {
     // Delete element from subgroup.
@@ -33,6 +56,45 @@ void free_group(map<int, vector<Item*>*>* group)
         free_subgroup_from_group(group, temp->first, temp->second);
     }
 }
+
+void verify_subgroup(map<char, map<int, vector<Item*>*>*> DataStructure, char c, int i)
+{
+    if (DataStructure.count(c) == 0)
+        throw invalid_argument(string("No such group '") + c + ("'\n"));
+    if (DataStructure[c]->count(i) == 0)
+        throw invalid_argument(
+            string("No such subgroup '") + c + to_string(i) + ("'\n")
+        );
+}
+
+vector<Item*>* CreateSubgroup(char c, int i,
+    initializer_list<tuple<string, optional<variant<Date, Time>>>> items,
+    map<char, map<int, vector<Item*>*>*> DataStructure)
+{
+    auto subgroup = new vector<Item*>;
+
+    // Verify if all items are correctly formatted.
+    for (auto& item : items)
+    {
+        string name = get<0>(item);
+        // We must free the memory.
+        if (name.empty())
+        {
+            vector<Item*>().swap(*subgroup);
+            delete subgroup;
+            subgroup = nullptr;
+            return subgroup;
+        }
+
+        variant<Date, Time> t;
+        t = get<1>(item) ? *get<1>(item) : Date::CreateRandomDate(Begin, End);
+        subgroup->push_back(new Item(c, i, name, t));
+    }
+
+    return subgroup;
+}
+
+// ==== Class method definitions ====
 
 Data::Data(int n)
 {
@@ -109,38 +171,39 @@ void Data::PrintGroup(char c)
 
     cout << c << ":\n";
     for (auto const& subgroup : *DataStructure[c])
-        this->PrintSubgroup(c, subgroup.first);
+    {
+        int i = subgroup.first;
+        verify_subgroup(this->DataStructure, c, i);
+
+        vector<Item*>* v = (*DataStructure[c])[i];
+        sort(v->begin(), v->end(), sort_by_name);
+
+        cout << setw(2) << to_string(i) << ":";
+        for (auto const& item : *v)
+        {
+            cout << " " << item->GetName() << " "
+                << visit(make_timestamp_string(), item->GetTimestamp()) << ";";
+        }
+        // Erase trailing semicolon.
+        cout << "\b \b" << endl;
+    }
+
     cout << endl;
 }
 
-bool sort_by_name(Item* item1, Item* item2)
-{
-    return item1->GetName().compare(item2->GetName()) < 0;
-}
-
-struct make_timestamp_string
-{
-    string operator()(Date t) const { return t.ToString(); }
-    string operator()(Time t) const { return t.ToString(); }
-};
-
 void Data::PrintSubgroup(char c, int i)
 {
-    if (DataStructure.count(c) == 0)
-        throw invalid_argument(string("No such group '") + c + ("'\n"));
-    if (DataStructure[c]->count(i) == 0)
-        throw invalid_argument(
-            string("No such subgroup '") + c + to_string(i) + ("'\n")
-        );
+    verify_subgroup(this->DataStructure, c, i);
 
     vector<Item*>* v = (*DataStructure[c])[i];
     sort(v->begin(), v->end(), sort_by_name);
 
-    cout << setw(2) << to_string(i) << ":";
+    cout << "Contents of group " << c << " subgroup " << to_string(i) << ":" << endl;
     for (auto const& item : *v)
-        cout << " " << item->GetName() << " "
-            << visit(make_timestamp_string(), item->GetTimestamp()) << ";";
-    cout << '\b' << endl;
+    {
+        cout << item->GetName() << " "
+            << visit(make_timestamp_string(), item->GetTimestamp()) << endl;
+    }
 }
 
 void Data::PrintItem(char c, int i, string s)
@@ -185,16 +248,6 @@ size_t Data::CountSubgroupItems(char c, int i)
     return count;
 }
 
-inline bool invalid_group(char c)
-{
-    return c < 'A' || c > 'Z';
-}
-
-inline bool invalid_sub(int i)
-{
-    return i < 0 || i > 99;
-}
-
 Item* Data::InsertItem(char c, int i, string s, optional<variant<Date, Time>> v)
 {
     if (s.empty() || invalid_group(c) || invalid_sub(i)) return nullptr;
@@ -228,33 +281,6 @@ Item* Data::InsertItem(char c, int i, string s, optional<variant<Date, Time>> v)
     return item;
 }
 
-vector<Item*>* CreateSubgroup(char c, int i,
-    initializer_list<tuple<string, optional<variant<Date, Time>>>> items,
-    map<char, map<int, vector<Item*>*>*> DataStructure)
-{
-    auto subgroup = new vector<Item*>;
-
-    // Verify if all items are correctly formatted.
-    for (auto& item : items)
-    {
-        string name = get<0>(item);
-        // We must free the memory.
-        if (name.empty())
-        {
-            vector<Item*>().swap(*subgroup);
-            delete subgroup;
-            subgroup = nullptr;
-            return subgroup;
-        }
-
-        variant<Date, Time> t;
-        t = get<1>(item) ? *get<1>(item) : Date::CreateRandomDate(Begin, End);
-        subgroup->push_back(new Item(c, i, name, t));
-    }
-
-    return subgroup;
-}
-
 vector<Item*>* Data::InsertSubgroup(char c, int i,
     initializer_list<tuple<string, optional<variant<Date, Time>>>> items)
 {
@@ -266,7 +292,7 @@ vector<Item*>* Data::InsertSubgroup(char c, int i,
 
     vector<Item*>* subgroup = CreateSubgroup(c, i, items, DataStructure);
     if (subgroup == nullptr) return subgroup;
-    
+
     if (DataStructure.count(c) == 0)
     {
         auto sg_map = new map<int, vector<Item*>*>{ {i, subgroup} };
